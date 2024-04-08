@@ -1,0 +1,4 @@
+postgres:
+  host: "localhost"
+  port: "9998"
+  ssl_mode: "disable"
