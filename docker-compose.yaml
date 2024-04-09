@@ -1,0 +1,22 @@
+version: '3.8'
+
+services: 
+  postgres_db:
+    image: postgres
+    container_name: lolz-test-postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=books
+      - POSTGRES_USER=lolz_test
+      - POSTGRES_PASSWORD=12345678
+    ports:
+      - "5436:5432"
+
+  app:
+    build: .
+    container_name: lolz-test-app
+    restart: always
+    ports:
+      - "8009:8009"
+    depends_on:
+      - postgres_db

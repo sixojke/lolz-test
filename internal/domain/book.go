@@ -46,9 +46,35 @@ func (d *BookGetByIdInp) Validate() error {
 }
 
 type BookGetByIdOut struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Genre       string `json:"genre"`
+	Name        string `json:"name" db:"name"`
+	Description string `json:"description" db:"description"`
+	Genre       string `json:"genre" db:"genre"`
+}
+
+type BooksGetByGenreInp struct {
+	Genre  string `json:"genre"`
+	Limit  int    `json:"limit"`
+	Offset int    `json:"offset"`
+}
+
+func (d *BooksGetByGenreInp) Validate(defaultLimit, defaultOffset int) {
+	if d.Genre == "" {
+		d.Genre = "all"
+	}
+
+	if d.Limit == 0 {
+		d.Limit = defaultLimit
+	}
+
+	if d.Offset == 0 {
+		d.Offset = defaultOffset
+	}
+}
+
+type BooksGetByGenreOut struct {
+	Id     string `json:"id" db:"id"`
+	Name   string `json:"name" db:"name"`
+	Author string `json:"author" db:"author"`
 }
 
 type BookDeleteInp struct {
@@ -61,4 +87,37 @@ func (d *BookDeleteInp) Validate() error {
 	}
 
 	return nil
+}
+
+type BooksSearchInp struct {
+	String string `json:"string"`
+	Limit  int    `json:"limit"`
+	Offset int    `json:"offset"`
+}
+
+func (d *BooksSearchInp) Validate(defaultLimit, defaultOffset int) {
+	if d.Limit == 0 {
+		d.Limit = defaultLimit
+	}
+
+	if d.Offset == 0 {
+		d.Offset = defaultOffset
+	}
+}
+
+type BooksSearchOut struct {
+	Id     string `json:"id" db:"id"`
+	Name   string `json:"name" db:"name"`
+	Author string `json:"author" db:"author"`
+}
+
+type Genre struct {
+	Id   string `json:"id" db:"id"`
+	Name string `json:"name" db:"name"`
+}
+
+type PaginationOut struct {
+	Limit  int         `json:"limit"`
+	Offset int         `json:"offset"`
+	Data   interface{} `json:"data"`
 }

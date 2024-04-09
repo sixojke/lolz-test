@@ -11,8 +11,8 @@ type BookService struct {
 	repo repository.Book
 }
 
-func NewBookService() *BookService {
-	return &BookService{}
+func NewBookService(repo repository.Book) *BookService {
+	return &BookService{repo: repo}
 }
 
 func (s *BookService) Create(inp *domain.BookCreateInp) error {
@@ -24,12 +24,25 @@ func (s *BookService) Create(inp *domain.BookCreateInp) error {
 }
 
 func (s *BookService) GetById(inp *domain.BookGetByIdInp) (*domain.BookGetByIdOut, error) {
-	out, err := s.repo.GetById(inp)
+	book, err := s.repo.GetById(inp)
 	if err != nil {
 		return nil, fmt.Errorf("book service get by id: %v", err)
 	}
 
-	return out, nil
+	return book, nil
+}
+
+func (s *BookService) GetByGenre(inp *domain.BooksGetByGenreInp) (*domain.PaginationOut, error) {
+	books, err := s.repo.GetByGenre(inp)
+	if err != nil {
+		return nil, fmt.Errorf("book service get by genre: %v", err)
+	}
+
+	return &domain.PaginationOut{
+		Limit:  inp.Limit,
+		Offset: inp.Offset,
+		Data:   books,
+	}, nil
 }
 
 func (s *BookService) Delete(inp *domain.BookDeleteInp) error {
@@ -38,4 +51,17 @@ func (s *BookService) Delete(inp *domain.BookDeleteInp) error {
 	}
 
 	return nil
+}
+
+func (s *BookService) Search(inp *domain.BooksSearchInp) (*domain.PaginationOut, error) {
+	books, err := s.repo.Search(inp)
+	if err != nil {
+		return nil, fmt.Errorf("book service search: %v", err)
+	}
+
+	return &domain.PaginationOut{
+		Data:   books,
+		Limit:  inp.Limit,
+		Offset: inp.Offset,
+	}, nil
 }

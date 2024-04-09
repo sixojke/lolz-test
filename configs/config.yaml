@@ -1,4 +1,15 @@
 postgres:
-  host: "localhost"
-  port: "9998"
+  host: "postgres_db"
+  port: 5432
+  db_name: "books"
   ssl_mode: "disable"
+
+http_server:
+    port: "8009"
+    read_timeout: 10s
+    write_timeout: 10s
+    max_header_bytes: 1
+
+books_handler:
+  limit: 20
+  offset: 0

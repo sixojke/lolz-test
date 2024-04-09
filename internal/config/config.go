@@ -16,10 +16,11 @@ const (
 )
 
 type Config struct {
-	Postgres   PostgresConfig
-	Redis      RedisConfig
-	Cache      CacheConfig
-	HTTPServer HTTPServerConfig
+	Postgres PostgresConfig
+	// Redis         RedisConfig
+	// Cache         CacheConfig
+	HTTPServer    HTTPServerConfig
+	HandlerConfig HandlerConfig
 }
 
 type PostgresConfig struct {
@@ -31,22 +32,31 @@ type PostgresConfig struct {
 	SSLMode  string `mapstructure:"ssl_mode"`
 }
 
-type RedisConfig struct {
-	Password string
-	Host     string `mapstructure:"host"`
-	Port     string `mapstructure:"port"`
-	DBName   int    `mapstructure:"db_name"`
-}
+// type RedisConfig struct {
+// 	Password string
+// 	Host     string `mapstructure:"host"`
+// 	Port     string `mapstructure:"port"`
+// 	DBName   int    `mapstructure:"db_name"`
+// }
 
-type CacheConfig struct {
-	Expiration time.Duration `mapstructure:"expiration"`
-}
+// type CacheConfig struct {
+// 	Expiration time.Duration `mapstructure:"expiration"`
+// }
 
 type HTTPServerConfig struct {
 	Port           string        `mapstructure:"port"`
 	ReadTimeout    time.Duration `mapstructure:"read_timeout"`
 	WriteTimeout   time.Duration `mapstructure:"write_timeout"`
 	MaxHeaderBytes int           `mapstructure:"max_header_bytes"`
+}
+
+type HandlerConfig struct {
+	Books BooksHandlerConfig
+}
+
+type BooksHandlerConfig struct {
+	Limit  int `mapstructure:"limit"`
+	Offset int `mapstructure:"offset"`
 }
 
 func InitConfig() (*Config, error) {
@@ -67,19 +77,23 @@ func unmarshal(cfg *Config) error {
 		return fmt.Errorf("unmarshal postgres config: %v", err)
 	}
 
-	if err := viper.UnmarshalKey("redis", &cfg.Redis); err != nil {
-		return fmt.Errorf("unmarshal redis config: %v", err)
-	}
+	// if err := viper.UnmarshalKey("redis", &cfg.Redis); err != nil {
+	// 	return fmt.Errorf("unmarshal redis config: %v", err)
+	// }
 
-	if err := viper.UnmarshalKey("cache", &cfg.Cache); err != nil {
-		return fmt.Errorf("unmarshal cache config: %v", err)
-	}
+	// if err := viper.UnmarshalKey("cache", &cfg.Cache); err != nil {
+	// 	return fmt.Errorf("unmarshal cache config: %v", err)
+	// }
 
 	if err := viper.UnmarshalKey("http_server", &cfg.HTTPServer); err != nil {
 		return fmt.Errorf("unmarshal http server config: %v", err)
 	}
 
-	cfg.Postgres.Username = os.Getenv("POSTGRES_USERNAME")
+	if err := viper.UnmarshalKey("books_handler", &cfg.HandlerConfig.Books); err != nil {
+		return fmt.Errorf("unmarshal books_handler config: %v", err)
+	}
+
+	cfg.Postgres.Username = os.Getenv("POSTGRES_USER")
 	cfg.Postgres.Password = os.Getenv("POSTGRES_PASSWORD")
 
 	return nil
